@@ -6,6 +6,11 @@
         <div class="col-lg-8">
             <?php $this->load->view('produtos/lista_produtos', ['produtos' => $produtos]); ?>
         </div>
+
+        <!-- Carrinho -->
+        <div class="col-lg-4">
+            <?php $this->load->view('carrinho/index', ['carrinho' => $carrinho]); ?>
+        </div>
     </div>
 </div>
 

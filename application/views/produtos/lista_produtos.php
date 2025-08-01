@@ -47,7 +47,7 @@
                                         foreach ($estoques as $estoque):
                                             $parts = explode(':', $estoque);
                                             $total_estoque += (int)$parts[1];
-                                            $cor_badge = (int)$parts[1] > 15 ? 'bg-success' : ((int)$parts[1] > 10 ? 'bg-warning' : 'bg-danger');
+                                            $cor_badge = (int)$parts[1] > 5 ? 'bg-success' : ((int)$parts[1] > 0 ? 'bg-warning' : 'bg-danger');
                                             echo '<span class="badge ' . $cor_badge . ' me-1">' . $parts[0] . ': ' . $parts[1] . '</span>';
                                         endforeach;
                                         ?>
@@ -79,10 +79,11 @@
         <?php endif; ?>
     </div>
     <?php if (!empty($produtos)): ?>
+        <?php $info = count($produtos) === 1 ? 'produto cadastrado' : 'produtos cadastrados' ?>
         <div class="card-footer text-muted">
             <small>
                 <i class="fas fa-info-circle"></i>
-                Total de <?= count($produtos) ?> produto(s) cadastrado(s)
+                Total de <?= count($produtos) ?> <?= $info ?>
             </small>
         </div>
     <?php endif; ?>
