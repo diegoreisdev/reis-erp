@@ -1,0 +1,74 @@
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: docker/php/Dockerfile
+    container_name: reis-erp-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www:delegated
+    depends_on:
+      - db
+      - redis
+    networks:
+      - reis-erp-net
+  nginx:
+    image: nginx:1.25.1-alpine-slim
+    container_name: reis-erp-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www:delegated
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - reis-erp-net
+  redis:
+    build:
+      context: ./
+      dockerfile: docker/redis/Dockerfile
+    container_name: reis-erp-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/data
+    networks:
+      - reis-erp-net
+  db:
+    image: mysql:8.0
+    container_name: reis-erp-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE:-reis-erp}
+      - MYSQL_USER=${DB_USERNAME:-reis-erp}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-reis-erp}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-123123}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - reis-erp-net
+    command: --default-authentication-plugin=mysql_native_password
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: reis-erp-phpmyadmin
+    restart: unless-stopped
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-123123}
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - reis-erp-net
+volumes:
+  redis:
+  db:
+networks:
+  reis-erp-net:
+    driver: bridge
