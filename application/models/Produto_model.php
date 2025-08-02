@@ -17,4 +17,16 @@ class Produto_model extends CI_Model
         $this->db->group_by('p.id');
         return $this->db->get()->result();
     }
+
+    public function get_by_id($id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->get('produtos')->row();
+    }
+
+    public function get_estoque($produto_id)
+    {
+        $this->db->where('produto_id', $produto_id);
+        return $this->db->get('estoque')->result();
+    }
 }

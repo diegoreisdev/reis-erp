@@ -12,7 +12,21 @@ class Produtos extends CI_Controller
     public function index()
     {
         $data['produtos'] = $this->Produto_model->get_all();
-        $data['carrinho'] = $this->session->userdata('carrinho') ?: array();
+        $data['carrinho'] = $this->session->userdata('carrinho') ?: [];
+        $data['page_title'] = 'Produtos';
+        $data['scripts'] = ['assets/js/produto.js'];
         $this->load->view('produtos/index', $data);
+    }
+
+    public function get_produto($id)
+    {
+        $produto = $this->Produto_model->get_by_id($id);
+        $estoque = $this->Produto_model->get_estoque($id);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'produto' => $produto,
+            'estoque' => $estoque
+        ]);
     }
 }

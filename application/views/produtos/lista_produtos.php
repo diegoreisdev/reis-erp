@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5><i class="fas fa-box"></i> Produtos</h5>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#produtoModal">
+        <button class="btn btn-primary" id="btn-novo-produto" data-novo-produto="true">
             <i class="fas fa-plus"></i> Novo Produto
         </button>
     </div>
@@ -10,7 +10,7 @@
             <div class="text-center py-4">
                 <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
                 <p class="text-muted">Nenhum produto cadastrado ainda.</p>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#produtoModal">
+                <button class="btn btn-primary" id="btn-novo-produto" data-novo-produto="true">
                     <i class="fas fa-plus"></i> Cadastrar o Primeiro Produto
                 </button>
             </div>
@@ -59,12 +59,12 @@
                                 <td>
                                     <div class="btn-group" role="group">
                                         <button class="btn btn-sm btn-outline-primary mx-1"
-                                            onclick="editarProduto(<?= $produto->id ?>)"
+                                            data-editar-produto="<?= $produto->id ?>"
                                             title="Editar Produto">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="btn btn-sm btn-outline-success"
-                                            onclick="mostrarCompra(<?= $produto->id ?>)"
+                                            data-comprar-produto="<?= $produto->id ?>"
                                             title="Comprar Produto"
                                             <?= empty($total_estoque) ? 'disabled' : '' ?>>
                                             <i class="fas fa-shopping-cart"></i>
@@ -88,3 +88,6 @@
         </div>
     <?php endif; ?>
 </div>
+
+<?php $this->load->view('produtos/modal_produto'); ?>
+<?php $this->load->view('compras/modal_compra'); ?>
