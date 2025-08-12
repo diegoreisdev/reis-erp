@@ -8,6 +8,11 @@ class Cupom_model extends CI_Model
         parent::__construct();
     }
 
+    public function get_all()
+    {
+        return $this->db->get('cupons')->result();
+    }
+
     public function get_by_codigo($codigo)
     {
         $this->db->where('codigo', $codigo);
