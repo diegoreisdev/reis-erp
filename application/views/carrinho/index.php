@@ -39,7 +39,7 @@
                                 </div>
                             </div>
                             <button class="btn btn-sm btn-outline-danger ms-2"
-                                onclick="removerItem('<?= $key ?>')"
+                                data-remover-item="<?= $key ?>"
                                 title="Remover item">
                                 <i class="fas fa-trash"></i>
                             </button>

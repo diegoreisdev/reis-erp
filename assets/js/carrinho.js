@@ -5,11 +5,15 @@ $(function () {
 	$(document).on("click", "[data-limpar-carrinho]", function () {
 		limparCarrinho();
 	});
+	$(document).on("click", "[data-remover-item]", function () {
+		const id = $(this).data("remover-item");
+		removerItem(id);
+	});
 });
 
 const adicionarAoCarrinho = () => {
-	const produtoId = $("#compra_produto_id").val();
-	const variacao = $("#compra_variacao").val();
+	const produtoId  = $("#compra_produto_id").val();
+	const variacao   = $("#compra_variacao").val();
 	const quantidade = parseInt($("#compra_quantidade").val());
 
 	if (!variacao) {
@@ -17,7 +21,7 @@ const adicionarAoCarrinho = () => {
 		return;
 	}
 
-	// Verificar quantidade máxima
+	  // Verificar quantidade máxima
 	const maxQtd = parseInt(
 		$("#compra_variacao option:selected").data("max-qtd")
 	);
@@ -28,11 +32,11 @@ const adicionarAoCarrinho = () => {
 	}
 
 	$.ajax({
-		url: `${baseUrl}produtos/adicionar_carrinho`,
+		url   : `${baseUrl}produtos/adicionar_carrinho`,
 		method: "POST",
-		data: {
+		data  : {
 			produto_id: produtoId,
-			variacao: variacao,
+			variacao  : variacao,
 			quantidade: quantidade,
 		},
 		dataType: "json",
@@ -45,7 +49,7 @@ const adicionarAoCarrinho = () => {
 				mostrarAlerta(data.message, "danger");
 			}
 		})
-		.fail(function (xhr, status, error) {
+		.fail(function (error) {
 			console.error("Erro:", error);
 			mostrarAlerta("Erro ao adicionar produto", "danger");
 		});
@@ -55,9 +59,9 @@ const limparCarrinho = () => {
 	if (!confirm("Deseja limpar todo o carrinho?")) return;
 
 	$.ajax({
-		url: `${baseUrl}produtos/remover_carrinho`,
-		method: "POST",
-		data: {},
+		url     : `${baseUrl}produtos/remover_carrinho`,
+		method  : "POST",
+		data    : {},
 		dataType: "json",
 	})
 		.done(function (data) {
@@ -66,7 +70,30 @@ const limparCarrinho = () => {
 				setTimeout(() => location.reload(), 1000);
 			}
 		})
-		.fail(function (xhr, status, error) {
+		.fail(function (error) {
+			console.error("Erro:", error);
+			mostrarAlerta("Erro ao remover item", "danger");
+		});
+};
+
+const removerItem = (itemKey) => {
+	if (!confirm("Deseja remover este item do carrinho?")) return;
+
+	$.ajax({
+		url   : `${baseUrl}produtos/remover_item_carrinho`,
+		method: "POST",
+		data  : {
+			item_key: itemKey,
+		},
+		dataType: "json",
+	})
+		.done(function (data) {
+			if (data.success) {
+				mostrarAlerta("Item removido do carrinho", "info");
+				setTimeout(() => location.reload(), 1000);
+			}
+		})
+		.fail(function (error) {
 			console.error("Erro:", error);
 			mostrarAlerta("Erro ao remover item", "danger");
 		});
