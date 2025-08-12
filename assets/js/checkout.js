@@ -6,21 +6,6 @@ $(function () {
     
     $(document).on('click', "[data-aplicar-cupom]", function(e) {
         e.preventDefault();  
-        const $btn = $(this);
-        const $cupomInput = $('#cupom_codigo');
-        
-        // Verificar se já está processando
-        if ($btn.prop('disabled')) {
-            return;
-        }
-        
-        // Verificar se já tem cupom aplicado
-        if ($cupomInput.data('cupom-aplicado')) {
-            mostrarAlerta('Já existe um cupom aplicado', 'info');
-            return;
-        }
-        
-        // Chamar função de aplicar cupom
         aplicarCupom();
     })
 
