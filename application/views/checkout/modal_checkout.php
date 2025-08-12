@@ -35,7 +35,7 @@
                             <div class="row mt-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Telefone</label>
-                                    <input type="text" class="form-control" name="telefone" id="telefone"
+                                    <input type="text" class="form-control" name="telefone" id="telefone" maxlength="15"
                                         placeholder="(11) 99999-9999">
                                 </div>
                             </div>
@@ -54,7 +54,7 @@
                                     <div class="input-group">
                                         <input type="text" class="form-control" name="cep" id="checkout_cep"
                                             placeholder="00000-000" maxlength="9" required>
-                                        <button type="button" class="btn btn-outline-primary" onclick="buscarCep()">
+                                        <button type="button" class="btn btn-outline-primary" data-buscar-cep>
                                             <i class="fas fa-search"></i>
                                         </button>
                                     </div>

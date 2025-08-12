@@ -135,4 +135,16 @@ class Produtos extends CI_Controller
 
         echo json_encode(array('success' => true));
     }
+
+    public function verificar_cep()
+    {
+        $cep = $this->input->post('cep');
+        $cep = preg_replace('/[^0-9]/', '', $cep);
+
+        $url = "https://viacep.com.br/ws/{$cep}/json/";
+        $response = file_get_contents($url);
+
+        header('Content-Type: application/json');
+        echo $response;
+    }
 }
