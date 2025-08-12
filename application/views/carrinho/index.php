@@ -66,7 +66,7 @@
                     <i class="fas fa-credit-card"></i> Finalizar Pedido
                 </button>
                 <button class="btn btn-outline-secondary btn-sm"
-                    onclick="limparCarrinho()"
+                    data-limpar-carrinho
                     title="Limpar carrinho">
                     <i class="fas fa-trash"></i> Limpar Carrinho
                 </button>

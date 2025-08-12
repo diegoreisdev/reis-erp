@@ -2,6 +2,9 @@ $(function () {
 	$(document).on("click", "[data-add-carrinho]", function () {
 		adicionarAoCarrinho();
 	});
+	$(document).on("click", "[data-limpar-carrinho]", function () {
+		limparCarrinho();
+	});
 });
 
 const adicionarAoCarrinho = () => {
@@ -45,5 +48,26 @@ const adicionarAoCarrinho = () => {
 		.fail(function (xhr, status, error) {
 			console.error("Erro:", error);
 			mostrarAlerta("Erro ao adicionar produto", "danger");
+		});
+};
+
+const limparCarrinho = () => {
+	if (!confirm("Deseja limpar todo o carrinho?")) return;
+
+	$.ajax({
+		url: `${baseUrl}produtos/remover_carrinho`,
+		method: "POST",
+		data: {},
+		dataType: "json",
+	})
+		.done(function (data) {
+			if (data.success) {
+				mostrarAlerta("Carrinho limpo com sucesso", "success");
+				setTimeout(() => location.reload(), 1000);
+			}
+		})
+		.fail(function (xhr, status, error) {
+			console.error("Erro:", error);
+			mostrarAlerta("Erro ao remover item", "danger");
 		});
 };

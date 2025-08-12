@@ -62,4 +62,13 @@ class Produtos extends CI_Controller
         $this->session->set_userdata('carrinho', $carrinho);
         echo json_encode(array('success' => true, 'message' => 'Produto adicionado ao carrinho'));
     }
+
+    public function remover_carrinho()
+    {
+        $carrinho = $this->session->userdata('carrinho');
+
+        if (isset($carrinho)) $this->session->unset_userdata('carrinho');
+
+        echo json_encode(array('success' => true));
+    }
 }
