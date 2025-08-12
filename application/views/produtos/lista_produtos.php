@@ -90,4 +90,5 @@
 </div>
 
 <?php $this->load->view('produtos/modal_produto'); ?>
+<?php $this->load->view('checkout/modal_checkout'); ?>
 <?php $this->load->view('compras/modal_compra'); ?>
