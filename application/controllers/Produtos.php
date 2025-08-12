@@ -30,6 +30,57 @@ class Produtos extends CI_Controller
         ]);
     }
 
+    public function salvar()
+    {
+        $mensagem = '';
+
+        $produto_data = array(
+            'nome' => $this->input->post('nome'),
+            'preco' => $this->input->post('preco'),
+            'descricao' => $this->input->post('descricao')
+        );
+
+        $produto_id = $this->input->post('produto_id');
+
+        if ($produto_id) {
+            // Update
+            $this->Produto_model->update($produto_id, $produto_data);
+            $mensagem = 'Produto atualizado com sucesso';
+        } else {
+            // Insert
+            $this->Produto_model->insert($produto_data);
+            $produto_id = $this->db->insert_id();
+            $mensagem = 'Produto adicionado com sucesso';
+        }
+
+        // Processar variações de estoque
+        $variacoes = $this->input->post('variacoes');
+        $quantidades = $this->input->post('quantidades');
+        $estoque_ids = $this->input->post('estoque_ids');
+
+        if ($variacoes && $quantidades) {
+            foreach ($variacoes as $key => $variacao) {
+                if (!empty($variacao) && isset($quantidades[$key])) {
+                    $estoque_data = array(
+                        'produto_id' => $produto_id,
+                        'variacao' => $variacao,
+                        'quantidade' => $quantidades[$key]
+                    );
+
+                    if (isset($estoque_ids[$key]) && !empty($estoque_ids[$key])) {
+                        // Update estoque existente
+                        $this->Produto_model->update_estoque($estoque_ids[$key], $estoque_data);
+                    } else {
+                        // Novo estoque
+                        $this->Produto_model->insert_estoque($estoque_data);
+                    }
+                }
+            }
+        }
+        $this->session->set_flashdata('sucesso', $mensagem);
+        redirect('produtos');
+    }
+
     public function adicionar_carrinho()
     {
         $produto_id = $this->input->post('produto_id');

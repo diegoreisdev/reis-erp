@@ -24,6 +24,18 @@ class Produto_model extends CI_Model
         return $this->db->get('produtos')->row();
     }
 
+    public function update($id, $data)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('produtos', $data);
+    }
+
+    public function update_estoque($id, $data)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('estoque', $data);
+    }
+
     public function get_estoque($produto_id)
     {
         $this->db->where('produto_id', $produto_id);

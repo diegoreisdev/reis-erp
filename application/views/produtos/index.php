@@ -1,6 +1,8 @@
 <?php $this->load->view('layouts/header'); ?>
 
 <div class="container mt-4">
+    <?php $this->load->view('layouts/messages'); ?>
+
     <div class="row">
         <!-- Lista de Produtos -->
         <div class="col-lg-8">
