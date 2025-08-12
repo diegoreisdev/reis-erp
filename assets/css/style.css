@@ -1,0 +1,48 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+main {
+	flex: 1;
+}
+
+.badge {
+	font-size: 0.75em;
+}
+
+.carrinho-item {
+	border-bottom: 1px solid #eee;
+	padding-bottom: 0.5rem;
+}
+
+.carrinho-item:last-child {
+	border-bottom: none;
+}
+
+.table-responsive {
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+.variacao-row {
+	margin-bottom: 0.5rem;
+}
+
+.modal-body {
+	max-height: 70vh;
+	overflow-y: auto;
+}
+
+.loading {
+	opacity: 0.6;
+	pointer-events: none;
+}

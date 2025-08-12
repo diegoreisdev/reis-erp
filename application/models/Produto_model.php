@@ -29,4 +29,15 @@ class Produto_model extends CI_Model
         $this->db->where('produto_id', $produto_id);
         return $this->db->get('estoque')->result();
     }
+
+    public function verificar_estoque($produto_id, $variacao = null, $quantidade = 1)
+    {
+        $this->db->where('produto_id', $produto_id);
+
+        if ($variacao) $this->db->where('variacao', $variacao);
+
+        $estoque = $this->db->get('estoque')->row();
+
+        return $estoque && $estoque->quantidade >= $quantidade;
+    }
 }
