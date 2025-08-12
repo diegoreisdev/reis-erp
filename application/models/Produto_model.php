@@ -15,6 +15,7 @@ class Produto_model extends CI_Model
         $this->db->join('estoque e', 'p.id = e.produto_id', 'left');
         $this->db->where('p.ativo', 1);
         $this->db->group_by('p.id');
+        $this->db->order_by('p.nome', 'ASC');
         return $this->db->get()->result();
     }
 
