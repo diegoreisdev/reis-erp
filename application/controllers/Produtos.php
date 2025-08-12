@@ -14,7 +14,7 @@ class Produtos extends CI_Controller
         $data['produtos']   = $this->Produto_model->get_all();
         $data['carrinho']   = $this->session->userdata('carrinho') ?: [];
         $data['page_title'] = 'Produtos';
-        $data['scripts']    = ['assets/js/produto.js', 'assets/js/carrinho.js'];
+        $data['scripts']    = ['assets/js/produto.js', 'assets/js/carrinho.js', 'assets/js/checkout.js'];
         $this->load->view('produtos/index', $data);
     }
 

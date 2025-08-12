@@ -23,7 +23,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <label class="form-label">Nome Completo <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="nome"
+                                    <input type="text" class="form-control" name="nome_cliente" id="nome_cliente"
                                         placeholder="Seu nome completo" required>
                                 </div>
                                 <div class="col-md-6">
@@ -35,7 +35,7 @@
                             <div class="row mt-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Telefone</label>
-                                    <input type="text" class="form-control" name="telefone"
+                                    <input type="text" class="form-control" name="telefone" id="telefone"
                                         placeholder="(11) 99999-9999">
                                 </div>
                             </div>
