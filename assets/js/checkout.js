@@ -138,6 +138,8 @@ const buscarCep = (e) => {
 				$("#endereco_completo").val(endereco).removeClass("is-invalid");
 				mostrarAlerta("Endereço encontrado!", "success");
 
+				calcularFrete();
+
 				  // Focar no campo de endereço para o usuário completar se necessário
 				setTimeout(() => {
 					$("#endereco_completo").focus();
@@ -147,7 +149,7 @@ const buscarCep = (e) => {
 				cepInput.addClass("is-invalid").focus();
 			}
 		})
-		.fail(function (xhr, status, error) {
+		.fail(function (xhr, status) {
 			let mensagem = "Erro ao buscar CEP. ";
 			if (status === "timeout") {
 				mensagem += "Tempo limite excedido.";
@@ -163,4 +165,42 @@ const buscarCep = (e) => {
 		.always(function () {
             $btn.html(originalText).prop('disabled', false);
 		});
+};
+
+const calcularFrete = () => {
+	const subtotalText = formatarPadraoInternacional($("#checkout_subtotal"));
+	const subtotal = parseFloat(subtotalText) || 0;
+	let frete      = 20.0;
+
+	if (subtotal >= 200.0) {
+		frete = 0.0;
+	} else if (subtotal >= 52.0 && subtotal <= 166.59) {
+		frete = 15.0;
+	}
+
+	$("#checkout_frete").text(formatarPadraoNacional(frete));
+
+	calcularTotal();
+};
+
+const formatarPadraoInternacional = (valor) => {
+    return valor.text().replace(/\./g, "").replace(",", ".");
+}
+
+const formatarPadraoNacional = (valor) => {
+	return valor.toFixed(2).replace(".", ",");
+}
+
+const calcularTotal = () => {
+	const subtotalText = formatarPadraoInternacional($("#checkout_subtotal"))        
+	const descontoText = formatarPadraoInternacional($("#checkout_desconto"));
+	const freteText    = formatarPadraoInternacional($("#checkout_frete"))
+
+	const subtotal = parseFloat(subtotalText) || 0;
+	const desconto = parseFloat(descontoText) || 0;
+	const frete    = parseFloat(freteText) || 0;
+
+	const total = subtotal - desconto + frete;
+
+	$("#checkout_total").text(formatarPadraoNacional(total));
 };
