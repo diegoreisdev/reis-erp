@@ -30,6 +30,11 @@ class Produto_model extends CI_Model
         return $this->db->update('produtos', $data);
     }
 
+    public function insert_estoque($data)
+    {
+        return $this->db->insert('estoque', $data);
+    }
+
     public function update_estoque($id, $data)
     {
         $this->db->where('id', $id);
