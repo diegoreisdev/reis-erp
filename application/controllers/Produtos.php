@@ -6,7 +6,7 @@ class Produtos extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Produto_model');
+        $this->load->model(['Produto_model', 'Cupom_model']);
     }
 
     public function index()
@@ -35,8 +35,8 @@ class Produtos extends CI_Controller
         $mensagem = '';
 
         $produto_data = array(
-            'nome' => $this->input->post('nome'),
-            'preco' => $this->input->post('preco'),
+            'nome'      => $this->input->post('nome'),
+            'preco'     => $this->input->post('preco'),
             'descricao' => $this->input->post('descricao')
         );
 
@@ -50,11 +50,11 @@ class Produtos extends CI_Controller
             // Insert
             $this->Produto_model->insert($produto_data);
             $produto_id = $this->db->insert_id();
-            $mensagem = 'Produto adicionado com sucesso';
+            $mensagem   = 'Produto adicionado com sucesso';
         }
 
         // Processar variações de estoque
-        $variacoes = $this->input->post('variacoes');
+        $variacoes   = $this->input->post('variacoes');
         $quantidades = $this->input->post('quantidades');
         $estoque_ids = $this->input->post('estoque_ids');
 
@@ -63,7 +63,7 @@ class Produtos extends CI_Controller
                 if (!empty($variacao) && isset($quantidades[$key])) {
                     $estoque_data = array(
                         'produto_id' => $produto_id,
-                        'variacao' => $variacao,
+                        'variacao'   => $variacao,
                         'quantidade' => $quantidades[$key]
                     );
 
@@ -141,10 +141,24 @@ class Produtos extends CI_Controller
         $cep = $this->input->post('cep');
         $cep = preg_replace('/[^0-9]/', '', $cep);
 
-        $url = "https://viacep.com.br/ws/{$cep}/json/";
+        $url      = "https://viacep.com.br/ws/{$cep}/json/";
         $response = file_get_contents($url);
 
         header('Content-Type: application/json');
         echo $response;
+    }
+
+    public function aplicar_cupom()
+    {
+        $codigo   = $this->input->post('codigo');
+        $subtotal = $this->input->post('subtotal');
+
+        $resultado = $this->Cupom_model->validar_cupom($codigo, $subtotal);
+
+        if ($resultado['valido']) {
+            $this->session->set_userdata('cupom_aplicado', $resultado);
+        }
+
+        echo json_encode($resultado);
     }
 }

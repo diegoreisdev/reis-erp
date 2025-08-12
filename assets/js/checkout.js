@@ -1,9 +1,38 @@
 $(function () {
-	  // Event listener para buscar CEP
 	$(document).on("click", "[data-buscar-cep]", function (e) {
 		e.preventDefault();  
 		buscarCep(e);
 	});
+    
+    $(document).on('click', "[data-aplicar-cupom]", function(e) {
+        e.preventDefault();  
+        const $btn = $(this);
+        const $cupomInput = $('#cupom_codigo');
+        
+        // Verificar se já está processando
+        if ($btn.prop('disabled')) {
+            return;
+        }
+        
+        // Verificar se já tem cupom aplicado
+        if ($cupomInput.data('cupom-aplicado')) {
+            mostrarAlerta('Já existe um cupom aplicado', 'info');
+            return;
+        }
+        
+        // Chamar função de aplicar cupom
+        aplicarCupom();
+    })
+
+    $(document).on('input', '#cupom_codigo', function() {
+        const $feedback = $('#cupom_feedback');
+        
+        // Limpar feedback se usuário começar a digitar
+        if ($feedback.find('.alert').length) {
+            $('[data-aplicar-cupom]').prop('disabled', false).html('<i class="fas fa-check"></i> Aplicar');
+            $feedback.empty();
+        }
+    });
 
 	  // Máscara para CEP
 	$(document).on("input", "#checkout_cep", function () {
@@ -203,4 +232,49 @@ const calcularTotal = () => {
 	const total = subtotal - desconto + frete;
 
 	$("#checkout_total").text(formatarPadraoNacional(total));
+};
+
+const aplicarCupom = () => {
+    const codigo = $('#cupom_codigo').val().trim().toUpperCase();
+    const subtotal = parseFloat($('#checkout_subtotal').text().replace(',', '.'));
+
+    $.ajax({
+        url: `${baseUrl}produtos/aplicar_cupom`,
+        method: 'POST',
+        data: {
+            codigo: codigo,
+            subtotal: subtotal
+        },
+        dataType: 'json'
+    })
+    .done(function(data) {
+        const $feedback = $('#cupom_feedback');
+
+        if (data.valido) {
+            // Cupom válido
+            $feedback.html('<div class="alert alert-success mb-0"><i class="fas fa-check"></i> Cupom aplicado com sucesso!</div>');
+            $('#checkout_desconto').text(data.desconto.toFixed(2).replace('.', ','));
+            $('#desconto_row').show();
+            
+            // Desabilitar botão de aplicar cupom
+            $('[data-aplicar-cupom]').prop('disabled', true).html('<i class="fas fa-check"></i> Aplicado');
+            
+            calcularTotal();
+        } else {
+            // Cupom inválido - limpar desconto
+            $('#checkout_desconto').text('0,00'); 
+            $('#desconto_row').hide();
+            $feedback.html(`<div class="alert alert-danger mb-0"><i class="fas fa-times"></i> ${data.erro}</div>`);
+            
+            // Reabilitar elementos se necessário
+            $('#cupom_codigo').prop('disabled', false);
+            $('[data-aplicar-cupom]').prop('disabled', false).html('<i class="fas fa-check"></i> Aplicar');
+            
+            calcularTotal();
+        }
+    })
+    .fail(function(error) {
+        console.error('Erro:', error);
+        mostrarAlerta('Erro ao aplicar cupom', 'danger');
+    });
 };

@@ -84,7 +84,7 @@
                                         placeholder="Digite o código do cupom">
                                 </div>
                                 <div class="col-md-4">
-                                    <button type="button" class="btn btn-outline-primary w-100" onclick="aplicarCupom()">
+                                    <button type="button" class="btn btn-outline-primary w-100" data-aplicar-cupom>
                                         <i class="fas fa-check"></i> Aplicar
                                     </button>
                                 </div>
