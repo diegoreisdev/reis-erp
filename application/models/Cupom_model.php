@@ -13,6 +13,11 @@ class Cupom_model extends CI_Model
         return $this->db->get('cupons')->result();
     }
 
+    public function get_by_id($id)
+    {
+        return $this->db->where('id', $id)->get('cupons')->row();
+    }
+
     public function get_by_codigo($codigo)
     {
         $this->db->where('codigo', $codigo);
@@ -49,5 +54,15 @@ class Cupom_model extends CI_Model
             'cupom'    => $cupom,
             'desconto' => $desconto
         );
+    }
+
+    public function insert($data)
+    {
+        return $this->db->insert('cupons', $data);
+    }
+
+    public function update($id, $data)
+    {
+        return $this->db->where('id', $id)->update('cupons', $data);
     }
 }

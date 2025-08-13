@@ -113,4 +113,5 @@
     </div>
 </div>
 
+<?php $this->load->view('cupons/modal_cupom'); ?>
 <?php $this->load->view('layouts/footer'); ?>
