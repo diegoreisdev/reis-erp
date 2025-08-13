@@ -136,11 +136,8 @@ const buscarCep = (e) => {
     $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
 
 	$.ajax({
-		url   : `${baseUrl}produtos/verificar_cep`,
-		method: "POST",
-		data  : {
-			cep: cep,
-		},
+		url   : `https://viacep.com.br/ws/${cep}/json/`,
+		method: "GET",
 		dataType: "json",
 		timeout : 10000,
 	})
@@ -229,7 +226,7 @@ const aplicarCupom = () => {
     const subtotal = parseFloat($('#checkout_subtotal').text().replace(',', '.'));
 
     $.ajax({
-        url   : `${baseUrl}produtos/aplicar_cupom`,
+        url   : `${baseUrl}cupons/aplicar_cupom`,
         method: 'POST',
         data  : {
             codigo  : codigo,

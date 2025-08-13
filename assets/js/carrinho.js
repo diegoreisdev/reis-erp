@@ -32,7 +32,7 @@ const adicionarAoCarrinho = () => {
 	}
 
 	$.ajax({
-		url   : `${baseUrl}produtos/adicionar_carrinho`,
+		url   : `${baseUrl}carrinho/adicionar_carrinho`,
 		method: "POST",
 		data  : {
 			produto_id: produtoId,
@@ -59,7 +59,7 @@ const limparCarrinho = () => {
 	if (!confirm("Deseja limpar todo o carrinho?")) return;
 
 	$.ajax({
-		url     : `${baseUrl}produtos/remover_carrinho`,
+		url     : `${baseUrl}carrinho/remover_carrinho`,
 		method  : "POST",
 		data    : {},
 		dataType: "json",
@@ -80,7 +80,7 @@ const removerItem = (itemKey) => {
 	if (!confirm("Deseja remover este item do carrinho?")) return;
 
 	$.ajax({
-		url   : `${baseUrl}produtos/remover_item_carrinho`,
+		url   : `${baseUrl}carrinho/remover_item_carrinho`,
 		method: "POST",
 		data  : {
 			item_key: itemKey,

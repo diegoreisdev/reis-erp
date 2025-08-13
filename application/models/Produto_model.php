@@ -3,6 +3,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Produto_model extends CI_Model
 {
+    private $table = 'produtos';
+
     public function __construct()
     {
         parent::__construct();
@@ -21,54 +23,16 @@ class Produto_model extends CI_Model
 
     public function get_by_id($id)
     {
-        $this->db->where('id', $id);
-        return $this->db->get('produtos')->row();
+        return $this->db->where('id', $id)->get($this->table)->row();
     }
 
     public function insert($data)
     {
-        return $this->db->insert('produtos', $data);
+        return $this->db->insert($this->table, $data);
     }
 
     public function update($id, $data)
     {
-        $this->db->where('id', $id);
-        return $this->db->update('produtos', $data);
-    }
-
-    public function insert_estoque($data)
-    {
-        return $this->db->insert('estoque', $data);
-    }
-
-    public function update_estoque($id, $data)
-    {
-        $this->db->where('id', $id);
-        return $this->db->update('estoque', $data);
-    }
-
-    public function get_estoque($produto_id)
-    {
-        $this->db->where('produto_id', $produto_id);
-        return $this->db->get('estoque')->result();
-    }
-
-    public function verificar_estoque($produto_id, $variacao = null, $quantidade = 1)
-    {
-        $this->db->where('produto_id', $produto_id);
-
-        if ($variacao) $this->db->where('variacao', $variacao);
-
-        $estoque = $this->db->get('estoque')->row();
-
-        return $estoque && $estoque->quantidade >= $quantidade;
-    }
-
-    public function reduzir_estoque($produto_id, $variacao, $quantidade)
-    {
-        $this->db->where('produto_id', $produto_id);
-        $this->db->where('variacao', $variacao);
-        $this->db->set('quantidade', 'quantidade - ' . (int)$quantidade, FALSE);
-        return $this->db->update('estoque');
+        return $this->db->where('id', $id)->update($this->table, $data);
     }
 }

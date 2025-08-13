@@ -59,4 +59,19 @@ class Cupons extends CI_Controller
         }
         redirect('cupons');
     }
+
+
+    public function aplicar_cupom()
+    {
+        $codigo   = $this->input->post('codigo');
+        $subtotal = $this->input->post('subtotal');
+
+        $resultado = $this->Cupom_model->validar_cupom($codigo, $subtotal);
+
+        if ($resultado['valido']) {
+            $this->session->set_userdata('cupom_aplicado', $resultado);
+        }
+
+        echo json_encode($resultado);
+    }
 }

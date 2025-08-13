@@ -1,7 +1,7 @@
 <div class="modal fade" id="checkoutModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form method="post" action="<?= base_url('produtos/finalizar_pedido') ?>" id="checkoutForm">
+            <form method="post" action="<?= base_url('pedidos/finalizar') ?>" id="checkoutForm">
                 <?php $subtotal = 0; ?>
                 <?php foreach ($carrinho as $item): ?>
                     <?php $subtotal += $item['preco'] * $item['quantidade']; ?>
