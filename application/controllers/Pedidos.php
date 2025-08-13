@@ -1,43 +1,58 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+/**
+ * @property Pedido_model  $Pedido_model
+ * @property Estoque_model $Estoque_model
+ * @property CI_Session    $session
+ * @property CI_Input      $input
+ * @property CI_Email      $email
+ */
 class Pedidos extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
         $this->load->model(['Pedido_model', 'Estoque_model']);
+        $this->load->library('email');
     }
 
-    public function finalizar()
+    /**
+     * Finaliza o pedido, insere no banco e envia e-mail
+     *
+     * @return void
+     */
+    public function finalizar(): void
     {
-        $carrinho = $this->session->userdata('carrinho') ?: array();
+        $carrinho = $this->session->userdata('carrinho') ?: [];
 
         if (empty($carrinho)) {
             redirect('produtos');
             return;
         }
 
-        // Calcular totais
+        // Calcular subtotal
         $subtotal = 0;
         foreach ($carrinho as $item) {
             $subtotal += $item['preco'] * $item['quantidade'];
         }
 
+        // Calcular frete
         $frete = $this->Pedido_model->calcular_frete($subtotal);
 
-        $desconto       = 0;
-        $cupom_codigo   = null;
-        $cupom_aplicado = $this->session->userdata('cupom_aplicado');
+        // Verificar cupom
+        $desconto     = 0;
+        $cupom_codigo = null;
+        $cupom        = $this->session->userdata('cupom_aplicado');
 
-        if ($cupom_aplicado && $cupom_aplicado['valido']) {
-            $desconto     = $cupom_aplicado['desconto'];
-            $cupom_codigo = $cupom_aplicado['cupom']->codigo;
+        if ($cupom && $cupom['valido']) {
+            $desconto     = $cupom['desconto'];
+            $cupom_codigo = $cupom['cupom']->codigo;
         }
 
         $total = $subtotal - $desconto + $frete;
 
-        // Dados do pedido
+        // Montar dados do pedido
         $pedido_data = [
             'numero_pedido'    => $this->Pedido_model->gerar_numero_pedido(),
             'cliente_nome'     => $this->input->post('cliente_nome'),
@@ -55,7 +70,7 @@ class Pedidos extends CI_Controller
         $pedido_id = $this->Pedido_model->insert($pedido_data);
 
         if ($pedido_id) {
-            // Inserir itens do pedido e reduzir estoque
+            // Inserir itens e atualizar estoque
             foreach ($carrinho as $item) {
                 $item_data = [
                     'pedido_id'      => $pedido_id,
@@ -70,11 +85,11 @@ class Pedidos extends CI_Controller
                 $this->Estoque_model->reduzir_estoque($item['produto_id'], $item['variacao'], $item['quantidade']);
             }
 
-
+            // Enviar confirmação por e-mail
             $this->enviar_email_pedido($pedido_id);
 
-            $this->session->unset_userdata('carrinho');
-            $this->session->unset_userdata('cupom_aplicado');
+            // Limpar sessão
+            $this->session->unset_userdata(['carrinho', 'cupom_aplicado']);
 
             $this->session->set_flashdata('sucesso', 'Pedido realizado com sucesso! Número: ' . $pedido_data['numero_pedido']);
         }
@@ -82,16 +97,25 @@ class Pedidos extends CI_Controller
         redirect('produtos');
     }
 
-    private function enviar_email_pedido($pedido_id)
+    /**
+     * Envia e-mail de confirmação do pedido
+     *
+     * @param int $pedido_id
+     * @return bool
+     */
+    private function enviar_email_pedido(int $pedido_id): bool
     {
         $pedido        = $this->Pedido_model->get_by_id($pedido_id);
         $pedido->itens = $this->Pedido_model->get_itens($pedido_id);
 
+        // Garantir SERVER_NAME para ambientes CLI
         if (empty($_SERVER['SERVER_NAME'])) {
-            $_SERVER['SERVER_NAME'] = !empty($_SERVER['HTTP_HOST']) ? explode(':', $_SERVER['HTTP_HOST'])[0] : 'localhost';
+            $_SERVER['SERVER_NAME'] = !empty($_SERVER['HTTP_HOST'])
+                ? explode(':', $_SERVER['HTTP_HOST'])[0]
+                :  'localhost';
         }
 
-        $config = array(
+        $config = [
             'protocol'     => 'smtp',
             'smtp_host'    => 'sandbox.smtp.mailtrap.io',
             'smtp_port'    => 2525,
@@ -100,17 +124,16 @@ class Pedidos extends CI_Controller
             'smtp_crypto'  => 'tls',
             'mailtype'     => 'html',
             'charset'      => 'utf-8',
-            'validate'     => FALSE,
+            'validate'     => false,
             'crlf'         => "\r\n",
             'newline'      => "\r\n",
             'smtp_timeout' => 30
-        );
+        ];
 
         $this->email->initialize($config);
 
         $data['pedido'] = $pedido;
-
-        $mensagem = $this->load->view('emails/pedido_confirmacao', $data, TRUE);
+        $mensagem       = $this->load->view('emails/pedido_confirmacao', $data, true);
 
         $this->email->from('no-reply@reiserp.com', 'Reis ERP');
         $this->email->to($pedido->cliente_email);
@@ -118,10 +141,10 @@ class Pedidos extends CI_Controller
         $this->email->message($mensagem);
 
         if ($this->email->send()) {
-            return TRUE;
-        } else {
-            log_message('error', 'Erro ao enviar email: ' . $this->email->print_debugger());
-            return FALSE;
+            return true;
         }
+
+        log_message('error', 'Erro ao enviar email: ' . $this->email->print_debugger());
+        return false;
     }
 }

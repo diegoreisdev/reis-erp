@@ -1,6 +1,11 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+/**
+ * @property Cupom_model $Cupom_model
+ * @property CI_Session  $session
+ * @property CI_Input    $input
+ */
 class Cupons extends CI_Controller
 {
     public function __construct()
@@ -9,69 +14,105 @@ class Cupons extends CI_Controller
         $this->load->model('Cupom_model');
     }
 
-    public function index()
+    /**
+     * Lista todos os cupons
+     *
+     * @return void
+     */
+    public function index(): void
     {
-        $data['cupons']     = $this->Cupom_model->get_all();
-        $data['page_title'] = 'Cupons';
-        $data['scripts']    = ['assets/js/cupom.js'];
+        $data = [
+            'cupons'     => $this->Cupom_model->get_all(),
+            'page_title' => 'Cupons',
+            'scripts'    => ['assets/js/cupom.js']
+        ];
+
         $this->load->view('cupons/index', $data);
     }
 
-    public function get_cupom($id)
+    /**
+     * Retorna os dados de um cupom pelo ID
+     *
+     * @param int $id
+     * @return void
+     */
+    public function get_cupom(int $id): void
     {
         $cupom = $this->Cupom_model->get_by_id($id);
-        header('Content-Type: application/json');
-        echo json_encode(['cupom' => $cupom]);
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(['cupom' => $cupom]));
     }
 
-    public function salvar()
+    /**
+     * Cria ou atualiza um cupom
+     *
+     * @return void
+     */
+    public function salvar(): void
     {
-        $cupom_data = array(
-            'codigo'       => strtoupper($this->input->post('codigo')),
+        $cupom_data = [
+            'codigo'       => strtoupper(trim($this->input->post('codigo'))),
             'tipo'         => $this->input->post('tipo'),
-            'valor'        => $this->input->post('valor'),
-            'valor_minimo' => $this->input->post('valor_minimo'),
+            'valor'        => (float) $this->input->post('valor'),
+            'valor_minimo' => (float) $this->input->post('valor_minimo'),
             'data_inicio'  => $this->input->post('data_inicio'),
             'data_fim'     => $this->input->post('data_fim'),
             'ativo'        => $this->input->post('ativo') ? 1 : 0
-        );
+        ];
 
-        $cupom_id = $this->input->post('cupom_id');
+        $cupom_id = (int) $this->input->post('cupom_id');
 
-        if ($cupom_id) {
+        if ($cupom_id > 0) {
             $this->Cupom_model->update($cupom_id, $cupom_data);
             $this->session->set_flashdata('sucesso', 'Cupom atualizado com sucesso');
         } else {
-            $this->Cupom_model->insert($cupom_data)
-                ? $this->session->set_flashdata('sucesso', 'Cupom criado com sucesso')
-                :  $this->session->set_flashdata('erro', 'Erro ao criar cupom');
+            if ($this->Cupom_model->insert($cupom_data)) {
+                $this->session->set_flashdata('sucesso', 'Cupom criado com sucesso');
+            } else {
+                $this->session->set_flashdata('erro', 'Erro ao criar cupom');
+            }
         }
 
         redirect('cupons');
     }
 
-    public function deletar($id)
+    /**
+     * Exclui um cupom pelo ID
+     *
+     * @param int $id
+     * @return void
+     */
+    public function deletar(int $id): void
     {
         if ($this->Cupom_model->delete($id)) {
             $this->session->set_flashdata('sucesso', 'Cupom deletado com sucesso!');
         } else {
             $this->session->set_flashdata('erro', 'Erro ao deletar cupom!');
         }
+
         redirect('cupons');
     }
 
-
-    public function aplicar_cupom()
+    /**
+     * Valida e aplica cupom na sessão
+     *
+     * @return void
+     */
+    public function aplicar_cupom(): void
     {
         $codigo   = $this->input->post('codigo');
-        $subtotal = $this->input->post('subtotal');
+        $subtotal = (float) $this->input->post('subtotal');
 
         $resultado = $this->Cupom_model->validar_cupom($codigo, $subtotal);
 
-        if ($resultado['valido']) {
+        if (!empty($resultado['valido']) && $resultado['valido']) {
             $this->session->set_userdata('cupom_aplicado', $resultado);
         }
 
-        echo json_encode($resultado);
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($resultado));
     }
 }
