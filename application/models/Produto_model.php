@@ -63,4 +63,12 @@ class Produto_model extends CI_Model
 
         return $estoque && $estoque->quantidade >= $quantidade;
     }
+
+    public function reduzir_estoque($produto_id, $variacao, $quantidade)
+    {
+        $this->db->where('produto_id', $produto_id);
+        $this->db->where('variacao', $variacao);
+        $this->db->set('quantidade', 'quantidade - ' . (int)$quantidade, FALSE);
+        return $this->db->update('estoque');
+    }
 }

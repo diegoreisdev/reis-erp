@@ -48,57 +48,62 @@ $(function () {
   // Validação do formulário
 $("#checkoutForm").on("submit", function (e) {
     e.preventDefault();
-	  // Buscar os valores
-	const nome     = $("#nome_cliente").val();
-	const telefone = $("#telefone").val();
-	const cep      = $("#checkout_cep").val();
-	const endereco = $("#endereco_completo").val();
-	const email    = $('input[name="email"]').val();
+    
+    const nome     = $("#cliente_nome").val();
+    const telefone = $("#telefone").val();
+    const cep      = $("#checkout_cep").val();
+    const endereco = $("#endereco_completo").val();
+    const email    = $('input[name="email"]').val();
 
 	  // Remover classes de erro anteriores
 	$(".is-invalid").removeClass("is-invalid");
 
 	  // Validação do nome
-	if (!nome || nome.trim().length < 5) {
-		
-		mostrarAlerta("O campo nome precisa de pelo menos 5 caracteres", "warning");
-		$("#nome_cliente").addClass("is-invalid").focus();
-		return false;
-	}
+    if (!nome || nome.trim().length < 5) {
+        mostrarAlerta("O campo nome precisa de pelo menos 5 caracteres", "warning");
+        $("#cliente_nome").addClass("is-invalid").focus();
+        return false;
+    }
 
-	  // Validação do email
-	if (!email || !emailValido(email)) {
-		mostrarAlerta("Por favor, digite um email válido", "warning");
-		$('input[name="email"]').addClass("is-invalid").focus();
-		return false;
-	}
+      // Validação do email
+    if (!email || !emailValido(email)) {
+        mostrarAlerta("Por favor, digite um email válido", "warning");
+        $('input[name="email"]').addClass("is-invalid").focus();
+        return false;
+    }
 
-	  // Validação do telefone
-	if (telefone && telefone.trim().length > 0) {
-		const telefoneNumeros = telefone.replace(/\D/g, "");
-		if (telefoneNumeros.length < 10) {
-			mostrarAlerta("Por favor, preencha o telefone corretamente", "warning");
-			$("#telefone").addClass("is-invalid").focus();
-			return false;
-		}
-	}
+      // Validação do telefone
+    if (telefone && telefone.trim().length > 0) {
+        const telefoneNumeros = telefone.replace(/\D/g, "");
+        if (telefoneNumeros.length < 10) {
+            mostrarAlerta("Por favor, preencha o telefone corretamente", "warning");
+            $("#telefone").addClass("is-invalid").focus();
+            return false;
+        }
+    }
 
-	  // Validação do CEP
-	if (!cep || cep.replace(/\D/g, "").length !== 8) {
-		mostrarAlerta("Por favor, digite um CEP válido com 8 dígitos", "warning");
-		$("#checkout_cep").addClass("is-invalid").focus();
-		return false;
-	}
+      // Validação do CEP
+    if (!cep || cep.replace(/\D/g, "").length !== 8) {
+        mostrarAlerta("Por favor, digite um CEP válido com 8 dígitos", "warning");
+        $("#checkout_cep").addClass("is-invalid").focus();
+        return false;
+    }
 
-	  // Validação do endereço
-	if (!endereco || endereco.trim().length < 10) {
-		mostrarAlerta("Por favor, preencha o endereço completo", "warning");
-		$("#endereco_completo").addClass("is-invalid").focus();
-		return false;
-	}
+      // Validação do endereço
+    if (!endereco || endereco.trim().length < 10) {
+        mostrarAlerta("Por favor, preencha o endereço completo", "warning");
+        $("#endereco_completo").addClass("is-invalid").focus();
+        return false;
+    }
+    
+      // Desabilitar o botão de envio para evitar double-click
+    const $submitBtn = $(this).find('button[type="submit"]');
+    $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Enviando...');
+    
+      // Enviar o formulário
+    this.submit();
 });
 
-  // Função para validar email
 const emailValido = (email) => {
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	return emailRegex.test(email);
@@ -183,8 +188,8 @@ const buscarCep = (e) => {
 
 const calcularFrete = () => {
 	const subtotalText = formatarPadraoInternacional($("#checkout_subtotal"));
-	const subtotal = parseFloat(subtotalText) || 0;
-	let frete      = 20.0;
+	const subtotal     = parseFloat(subtotalText) || 0;
+	let   frete        = 20.0;
 
 	if (subtotal >= 200.0) {
 		frete = 0.0;
@@ -206,7 +211,7 @@ const formatarPadraoNacional = (valor) => {
 }
 
 const calcularTotal = () => {
-	const subtotalText = formatarPadraoInternacional($("#checkout_subtotal"))        
+	const subtotalText = formatarPadraoInternacional($("#checkout_subtotal"))
 	const descontoText = formatarPadraoInternacional($("#checkout_desconto"));
 	const freteText    = formatarPadraoInternacional($("#checkout_frete"))
 
@@ -220,14 +225,14 @@ const calcularTotal = () => {
 };
 
 const aplicarCupom = () => {
-    const codigo = $('#cupom_codigo').val().trim().toUpperCase();
+    const codigo   = $('#cupom_codigo').val().trim().toUpperCase();
     const subtotal = parseFloat($('#checkout_subtotal').text().replace(',', '.'));
 
     $.ajax({
-        url: `${baseUrl}produtos/aplicar_cupom`,
+        url   : `${baseUrl}produtos/aplicar_cupom`,
         method: 'POST',
-        data: {
-            codigo: codigo,
+        data  : {
+            codigo  : codigo,
             subtotal: subtotal
         },
         dataType: 'json'
