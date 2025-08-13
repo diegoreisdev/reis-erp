@@ -21,6 +21,11 @@ $(function () {
 		editarProduto(id);
 	});
 
+	$(document).on("click", "[data-excluir-produto]", function () {
+		const id = $(this).data("excluir-produto");
+		excluirProduto(id);
+	});
+
 	$(document).on("click", "[data-add-variacao]", function () {
 		adicionarVariacao();
 	});
@@ -143,4 +148,35 @@ const editarProduto = (id) => {
 
 		$("#produtoModal").modal("show");
 	}).fail(() => mostrarAlerta("Erro ao carregar produto", "danger"));
+};
+
+const excluirProduto = (id) => {
+	// Confirmação antes de excluir
+	if (confirm("Tem certeza que deseja excluir este produto?\n\n⚠️ ATENÇÃO: Esta ação irá excluir:\n• O produto\n• Todo o estoque relacionado\n• Todas as variações\n\nEsta ação não pode ser desfeita!")) {
+		// Mostra loading no botão
+		const $btn         = $(`[data-excluir-produto="${id}"]`);
+		const originalHtml = $btn.html();
+		$btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+		
+		$.ajax({
+			url     : `${baseUrl}produtos/excluir/${id}`,
+			type    : 'POST',
+			dataType: 'json',
+		})		
+		.done(function (data) {
+			if (data.sucesso) {
+				mostrarAlerta(data.sucesso, "success");
+				setTimeout(() => {
+					location.reload();
+				}, 1000);
+			} else {
+				mostrarAlerta(data.erro || "Erro ao excluir produto", "danger");
+				$btn.html(originalHtml).prop('disabled', false);
+			}
+		})
+		.fail(function (error) {
+			mostrarAlerta('Erro ao excluir produto', "danger");
+			$btn.html(originalHtml).prop('disabled', false);
+		});
+	}
 };

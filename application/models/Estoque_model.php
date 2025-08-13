@@ -84,4 +84,15 @@ class Estoque_model extends CI_Model
         $this->db->set('quantidade', 'quantidade - ' . (int) $quantidade, false);
         return $this->db->update($this->table);
     }
+
+    /**
+     * Exclui todo o estoque de um produto específico
+     *
+     * @param int $produto_id
+     * @return bool
+     */
+    public function excluir_estoque_produto(int $produto_id): bool
+    {
+        return $this->db->where('produto_id', $produto_id)->delete($this->table);
+    }
 }

@@ -64,4 +64,15 @@ class Produto_model extends CI_Model
     {
         return $this->db->where('id', $id)->update($this->table, $data);
     }
+
+    /**
+     * Exclui um produto (soft delete - marca como inativo)
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function delete(int $id): bool
+    {
+        return $this->db->where('id', $id)->update($this->table, ['ativo' => 0]);
+    }
 }

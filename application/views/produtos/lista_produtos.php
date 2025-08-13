@@ -69,6 +69,11 @@
                                             <?= empty($total_estoque) ? 'disabled' : '' ?>>
                                             <i class="fas fa-shopping-cart"></i>
                                         </button>
+                                        <button class="btn btn-sm btn-outline-danger mx-1"
+                                            data-excluir-produto="<?= $produto->id ?>"
+                                            title="Excluir Produto">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>

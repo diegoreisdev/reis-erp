@@ -102,4 +102,52 @@ class Produtos extends CI_Controller
         $this->session->set_flashdata('sucesso', $mensagem);
         redirect('produtos');
     }
+
+    /**
+     * Exclui um produto e todo o seu estoque relacionado
+     *
+     * @param int $id
+     * @return void
+     */
+    public function excluir(int $id): void
+    {
+        // Verifica se o produto existe
+        $produto = $this->Produto_model->get_by_id($id);
+
+        if (!$produto) {
+            $this->output
+                ->set_status_header(404)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['erro' => 'Produto não encontrado']));
+            return;
+        }
+
+        // Inicia transação para garantir integridade dos dados
+        $this->db->trans_start();
+
+        try {
+            // Exclui todo o estoque relacionado ao produto
+            $this->Estoque_model->excluir_estoque_produto($id);
+
+            // Exclui o produto (soft delete - marca como inativo)
+            $this->Produto_model->delete($id);
+
+            $this->db->trans_complete();
+
+            if ($this->db->trans_status() === false) {
+                throw new Exception('Erro ao excluir produto');
+            }
+
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['sucesso' => 'Produto excluído com sucesso']));
+        } catch (Exception $e) {
+            $this->db->trans_rollback();
+
+            $this->output
+                ->set_status_header(500)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['erro' => 'Erro ao excluir produto: ' . $e->getMessage()]));
+        }
+    }
 }
