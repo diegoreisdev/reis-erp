@@ -31,6 +31,8 @@ const adicionarAoCarrinho = () => {
 		return;
 	}
 
+	$("#compraModal").modal("hide");
+	
 	$.ajax({
 		url   : `${baseUrl}carrinho/adicionar_carrinho`,
 		method: "POST",
