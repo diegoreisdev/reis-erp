@@ -49,4 +49,14 @@ class Cupons extends CI_Controller
 
         redirect('cupons');
     }
+
+    public function deletar($id)
+    {
+        if ($this->Cupom_model->delete($id)) {
+            $this->session->set_flashdata('sucesso', 'Cupom deletado com sucesso!');
+        } else {
+            $this->session->set_flashdata('erro', 'Erro ao deletar cupom!');
+        }
+        redirect('cupons');
+    }
 }

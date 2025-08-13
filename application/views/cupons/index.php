@@ -81,7 +81,7 @@
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <button class="btn btn-sm btn-outline-primary"
+                                            <button class="btn btn-sm btn-outline-primary mx-1"
                                                 data-editar-cupom="<?= $cupom->id ?>"
                                                 title="Editar Cupom">
                                                 <i class="fas fa-edit"></i>

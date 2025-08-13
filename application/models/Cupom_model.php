@@ -65,4 +65,9 @@ class Cupom_model extends CI_Model
     {
         return $this->db->where('id', $id)->update('cupons', $data);
     }
+
+    public function delete($id)
+    {
+        return $this->db->where('id', $id)->delete('cupons');
+    }
 }
