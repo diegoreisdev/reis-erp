@@ -1,8 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+/**
+ * @property CI_DB_query_builder $db
+ */
 class Estoque_model extends CI_Model
 {
+    /** @var string */
     private $table = 'estoque';
 
     public function __construct()
@@ -10,37 +14,74 @@ class Estoque_model extends CI_Model
         parent::__construct();
     }
 
-    public function insert_estoque($data)
+    /**
+     * Insere um registro no estoque
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function insert_estoque(array $data): bool
     {
         return $this->db->insert($this->table, $data);
     }
 
-    public function update_estoque($id, $data)
+    /**
+     * Atualiza um registro de estoque pelo ID
+     *
+     * @param int $id
+     * @param array $data
+     * @return bool
+     */
+    public function update_estoque(int $id, array $data): bool
     {
         return $this->db->where('id', $id)->update($this->table, $data);
     }
 
-    public function get_estoque($produto_id)
+    /**
+     * Retorna todo o estoque de um produto
+     *
+     * @param int $produto_id
+     * @return array
+     */
+    public function get_estoque(int $produto_id): array
     {
         return $this->db->where('produto_id', $produto_id)->get($this->table)->result();
     }
 
-    public function verificar_estoque($produto_id, $variacao = null, $quantidade = 1)
+    /**
+     * Verifica se há estoque suficiente para um produto/variação
+     *
+     * @param int $produto_id
+     * @param string|null $variacao
+     * @param int $quantidade
+     * @return bool
+     */
+    public function verificar_estoque(int $produto_id, ?string $variacao = null, int $quantidade = 1): bool
     {
         $this->db->where('produto_id', $produto_id);
 
-        if ($variacao) $this->db->where('variacao', $variacao);
+        if ($variacao !== null) {
+            $this->db->where('variacao', $variacao);
+        }
 
         $estoque = $this->db->get($this->table)->row();
 
         return $estoque && $estoque->quantidade >= $quantidade;
     }
 
-    public function reduzir_estoque($produto_id, $variacao, $quantidade)
+    /**
+     * Reduz a quantidade em estoque para um produto/variação
+     *
+     * @param int $produto_id
+     * @param string $variacao
+     * @param int $quantidade
+     * @return bool
+     */
+    public function reduzir_estoque(int $produto_id, string $variacao, int $quantidade): bool
     {
         $this->db->where('produto_id', $produto_id);
         $this->db->where('variacao', $variacao);
-        $this->db->set('quantidade', 'quantidade - ' . (int)$quantidade, FALSE);
+        $this->db->set('quantidade', 'quantidade - ' . (int) $quantidade, false);
         return $this->db->update($this->table);
     }
 }
