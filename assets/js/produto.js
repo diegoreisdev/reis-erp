@@ -5,7 +5,8 @@ $(function () {
 		$("#modal-title-text").text("Novo Produto");
 		$("#btn-title-text").html('<i class="fas fa-save"></i> Salvar Produto');
 
-		const $container = $("#variacoes-container").empty();
+		// Limpa as variações antes de adicionar a primeira
+		$("#variacoes-container").empty();
 		adicionarVariacao();
 
 		$("#produtoModal").modal("show");
@@ -14,6 +15,11 @@ $(function () {
 	$(document).on("click", "[data-comprar-produto]", function () {
 		const id = $(this).data("comprar-produto");
 		comprarProduto(id);
+	});
+
+	$(document).on("click", "[data-salvar-produto]", function (e) {
+		e.preventDefault();
+		salvarProduto();
 	});
 
 	$(document).on("click", "[data-editar-produto]", function () {
@@ -73,6 +79,45 @@ const calcularTotalItem = () => {
 	const total = preco * quantidade;
 
 	$("#total_item").text(`R$ ${total.toFixed(2).replace(".", ",")}`);
+};
+
+const salvarProduto = () => {
+	let variacaoValida = false;
+	$("#variacoes-container .variacao-row").each(function () {
+		const variacao = $(this).find('input[name="variacoes[]"]').val();
+		const quantidade = $(this).find('input[name="quantidades[]"]').val();
+		if (variacao && quantidade && parseInt(quantidade) > 0) {
+			variacaoValida = true;
+			return false;
+		}
+	});
+	if (!variacaoValida) {
+		mostrarAlerta("Adicione pelo menos uma variação e quantidade maior que zero.", "warning");
+		return;
+	}
+
+	const formData = $("#produtoForm").serialize();
+			$.ajax({
+			url     : `${baseUrl}produtos/salvar`,
+			type    : 'POST',
+			data    : formData,
+			dataType: 'json',
+		})		
+		.done(function (data) {			
+			if (data.sucesso) {
+				mostrarAlerta("Produto salvo com sucesso", "success");
+				$("#produtoModal").modal("hide");
+				setTimeout(() => {
+					location.reload();
+				}, 1000);
+			} else {
+				mostrarAlerta(data.erro || "Erro ao salvar produto", "danger");
+				$btn.html(originalHtml).prop('disabled', false);
+			}
+		})
+		.fail(function () {
+			mostrarAlerta('Erro ao salvar produto', "danger");
+		});
 };
 
 const adicionarVariacao = () => {
@@ -165,7 +210,7 @@ const excluirProduto = (id) => {
 		})		
 		.done(function (data) {
 			if (data.sucesso) {
-				mostrarAlerta(data.sucesso, "success");
+				mostrarAlerta("Produto excluído com sucesso", "success");
 				setTimeout(() => {
 					location.reload();
 				}, 1000);

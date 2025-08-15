@@ -1,7 +1,7 @@
 <div class="modal fade" id="produtoModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="produtoForm" method="post" action="<?= base_url('produtos/salvar') ?>">
+            <form id="produtoForm">
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-box"></i> <span id="modal-title-text">Novo Produto</span>
@@ -66,7 +66,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times"></i> Cancelar
                     </button>
-                    <button type="submit" class="btn btn-primary" id="btn-title-text">
+                    <button type="submit" class="btn btn-primary" id="btn-title-text" data-salvar-produto>
                         <i class="fas fa-save"></i> Salvar Produto
                     </button>
                 </div>

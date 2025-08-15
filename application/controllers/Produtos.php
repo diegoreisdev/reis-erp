@@ -99,8 +99,9 @@ class Produtos extends CI_Controller
             }
         }
 
-        $this->session->set_flashdata('sucesso', $mensagem);
-        redirect('produtos');
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(['sucesso' => 'Produto salvo com sucesso']));
     }
 
     /**
